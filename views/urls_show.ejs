@@ -9,7 +9,9 @@
   <blockquote>
     your shortened URL: <%= templateVars.shortURL %> <br>
     your full URL: <%= templateVars.longURL[templateVars.shortURL] %>
-    <form action="/urls/:id" method="POST">
+    <br>
+    <br>
+    <form action="/urls/<%= templateVars.shortURL %>" method="POST">
       <label for="updatedURL">Enter an updated URL:</label>
       <input id ="updatedURL" type="text" name="updatedURL" placeholder="http://" style="width: 300px">
       <input type="submit" value="Update">
@@ -17,10 +19,3 @@
   </blockquote>
 </body>
 </html>
-
-
-<form action="/urls" method="POST" style="margin:150px;">
-  <label for="longURL">Enter a URL:</label>
-  <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-  <input type="submit" value="Submit">
-</form>
