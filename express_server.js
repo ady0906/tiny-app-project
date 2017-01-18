@@ -62,6 +62,22 @@ app.get("/u/:shortURL", (req, res) => {
   // res.redirect(longURL);
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  let key = req.params.id;
+  delete urlDatabase[key];
+  res.redirect('/urls');
+});
+
+app.post("/urls/:id", (req, res) => {
+  let key = req.params.id;
+  let updatedURL = req.body.updatedURL;
+  let updatedShort = generateRandomString();
+  delete urlDatabase[key];
+  urlDatabase[updatedShort] = updatedURL;
+  res.redirect('/urls');
+})
+
+
 app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}!`);
 });
