@@ -29,17 +29,27 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
+  res.render("urls_new", {templateVars: templateVars});
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {shortURL: req.params.id,
-                      longURL: urlDatabase};
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render("urls_show", {templateVars: templateVars});
 });
 
@@ -74,7 +84,7 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username, {maxAge: 64000});
-  console.log('cookie created successfully');
+  // console.log('cookie created successfully');
   res.redirect('/');
   // debugger;
 });
