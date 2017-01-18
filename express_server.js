@@ -21,7 +21,11 @@ var urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  res.redirect("urls");
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -41,7 +45,7 @@ app.get("/urls/new", (req, res) => {
     username: req.cookies["username"],
     urls: urlDatabase
   };
-  res.render("urls_new", {templateVars: templateVars});
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -50,7 +54,7 @@ app.get("/urls/:id", (req, res) => {
     longURL: urlDatabase,
     username: req.cookies["username"]
   };
-  res.render("urls_show", {templateVars: templateVars});
+  res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -67,6 +71,10 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
   let key = req.params.id;
   delete urlDatabase[key];
   res.redirect('/urls');
@@ -78,12 +86,20 @@ app.post("/urls/:id", (req, res) => {
   let updatedURL = req.body.updatedURL;
   let updatedShort = generateRandomString();
   urlDatabase[updatedShort] = updatedURL;
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
   // debugger;
   res.redirect('/urls');
 });
 
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username, {maxAge: 64000});
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
   // console.log('cookie created successfully');
   res.redirect('/');
   // debugger;

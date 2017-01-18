@@ -6,12 +6,13 @@
 </head>
 <body>
   <% include ./partials/_header %>
+  <%= username; %>
   <blockquote>
-    your shortened URL &nbsp;&#8594;&nbsp; <%= templateVars.shortURL %> <br>
-    your full URL &nbsp;&#8594;&nbsp; <%= templateVars.longURL[templateVars.shortURL] %>
+    your shortened URL &nbsp;&#8594;&nbsp; <%= shortURL %> <br>
+    your full URL &nbsp;&#8594;&nbsp; <%= longURL[shortURL] %>
     <br>
     <br>
-    <form action="/urls/<%= templateVars.shortURL %>" method="POST">
+    <form action="/urls/<%= shortURL %>" method="POST">
       <label for="updatedURL">Enter an updated URL:</label>
       <input id ="updatedURL" type="text" name="updatedURL" placeholder="http://" style="width: 300px">
       <input type="submit" value="Update">
