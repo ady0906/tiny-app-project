@@ -1,5 +1,9 @@
 var express = require("express");
+var cookieParser = require('cookie-parser');
 var app = express();
+
+app.use(cookieParser());
+
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 
@@ -66,7 +70,14 @@ app.post("/urls/:id", (req, res) => {
   urlDatabase[updatedShort] = updatedURL;
   // debugger;
   res.redirect('/urls');
-})
+});
+
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body.username, {maxAge: 64000});
+  console.log('cookie created successfully');
+  res.redirect('/');
+  // debugger;
+});
 
 
 app.listen(PORT, () => {
