@@ -39,13 +39,11 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id };// , longURL: }; // find the o
-  if (urlDatabase.hasOwnProperty(shortURL)) {
-    res.redirect(urlDatabase.shortURL)
-  } else {
-  console.log("url/id");
-  res.render("urls_show", templateVars);
-  };
+  console.log('params', req.params.id);
+  let templateVars = {shortURL: req.params.id,
+                      longURL: urlDatabase};
+  console.log(templateVars);
+  res.render("urls_show", {templateVars: templateVars});
 });
 
 app.post("/urls", (req, res) => { // is that referring to /urls/create
@@ -53,9 +51,6 @@ app.post("/urls", (req, res) => { // is that referring to /urls/create
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
-  // console.log(urlDatabase);
-  // res.send("Ok");
-  console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
 

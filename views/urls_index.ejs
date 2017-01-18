@@ -7,9 +7,11 @@
   <% include ./partials/_header %>
   <ul>
   <% for (let pair in urls) { %>
-    <li><%= pair %>: <%= urls[pair] %>&nbsp;&nbsp;<button type="button" class="btn btn-primary btn-sm">Edit</button>&nbsp;&nbsp;<button type="button" class="btn btn-danger btn-sm">Delete</button></li><br>
+    <form method = "POST" action = <%= `/urls/${pair}/delete` %> >
+      <li><%= pair %>: <%= urls[pair] %>&nbsp;&nbsp;<button type="button" class="btn btn-primary btn-sm">Edit</button>&nbsp;&nbsp;<button type="button" class="btn btn-danger btn-sm">Delete</button></li><br>
+    </form>
   <% }; %>
   </ul>
-  <blockquote><a href=#>Shorten new URL</a></blockquote>
+  <blockquote><a href="/urls/new">Shorten new URL</a></blockquote>
 </body>
 </html>

@@ -6,8 +6,7 @@
 </head>
 <body>
   <% include ./partials/_header %>
-    <%= console.log(templateVars)  ; =>
-  <!-- your shortened URL: <%= shortURL %>
-  your full URL: <%= longURL %> -->
+  <blockquote>your shortened URL: <%= templateVars.shortURL %> <br>
+  your full URL: <%= templateVars.longURL[templateVars.shortURL] %></blockquote>
 </body>
 </html>
