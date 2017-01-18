@@ -12,7 +12,7 @@
   <% include ./partials/_header %>
   <ul>
   <% for (let pair in urls) { %>
-      <li><%= pair %>: <%= urls[pair] %> 	&nbsp;
+      <li><%= pair %>&#8594; <%= urls[pair] %> 	&nbsp;
         <div class = "div1"><a href="/urls/<%= pair %>">Edit</a></div>	&nbsp;
         <div class = "div2"><form id = "form1" method = "POST" action = "/urls/<%= pair %>/delete">
           <button type = "submit" class = "btn btn-danger btn-sm" form = "form1" value = "Delete">Delete</button>
