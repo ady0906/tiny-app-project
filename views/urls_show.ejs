@@ -7,8 +7,8 @@
 <body>
   <% include ./partials/_header %>
   <blockquote>
-    your shortened URL &#8594; <%= templateVars.shortURL %> <br>
-    your full URL &#8594; <%= templateVars.longURL[templateVars.shortURL] %>
+    your shortened URL &nbsp;&#8594;&nbsp; <%= templateVars.shortURL %> <br>
+    your full URL &nbsp;&#8594;&nbsp; <%= templateVars.longURL[templateVars.shortURL] %>
     <br>
     <br>
     <form action="/urls/<%= templateVars.shortURL %>" method="POST">
