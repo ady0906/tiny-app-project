@@ -23,11 +23,6 @@ const urlDatabase = {
 const users = {};
 
 app.get("/", (req, res) => {
-  let templateVars = {
-    userEmail: req.cookies["userEmail"],
-    urls: urlDatabase,
-    usersInfo: users
-  };
   res.redirect("/urls");
 });
 
@@ -67,7 +62,12 @@ app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
+  let templateVars = {
+    userEmail: req.cookies["userEmail"],
+    urls: urlDatabase,
+    usersInfo: users
+  };
+  res.redirect(`/urls/${shortURL}`, templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -84,7 +84,7 @@ app.post("/urls/:id/delete", (req, res) => {
   };
   let key = req.params.id;
   delete urlDatabase[key];
-  res.redirect('/urls');
+  res.redirect('/urls', templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
@@ -98,7 +98,7 @@ app.post("/urls/:id", (req, res) => {
     urls: urlDatabase,
     usersInfo: users
   };
-  res.redirect('/urls');
+  res.redirect('/urls', templateVars);
 });
 
 app.get("/login", (req, res) => {
@@ -111,19 +111,15 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  // res.cookie('userEmail', req.body.userEmail, {maxAge: 64000});
-  // let templateVars = {
-  //   userEmail: req.cookies["userEmail"],
-  //   urls: urlDatabase
-  // };
   for (let user in users) {
     if (users[user].email === req.body.email && users[user].password === req.body.password) {
       res.cookie('userEmail', users[user].id, {maxAge: 64000});
       let templateVars = {
-        // userEmail: req.cookies["userEmail"],
-        urls: urlDatabase
-      }
-      res.redirect("/");
+        userEmail: res.cookie('userEmail', users[user].id, {maxAge: 64000}),
+        urls: urlDatabase,
+        usersInfo: users
+      };
+      res.redirect("/");  //,templateVars);
       return;
     } else if (users[user].email === req.body.email && users[user].password !== req.body.password) {
       res.status(403).send('Status code 403: this is not the right password!');
@@ -172,9 +168,8 @@ app.post("/register", (req, res) => {
     id: userRandomID,
     email: userEmail,
     password: userPassword
-  }
+    }
   res.redirect("/");
-  // debugger;
 });
 
 

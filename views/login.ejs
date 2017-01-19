@@ -4,7 +4,7 @@
   </head>
   <body>
     <% include partials/_header %>
-    <%= usersInfo[userEmail].email %>
+    <% userEmail; %>
     <form action="/register" method="POST" style="margin:150px;">
       <label for="email">type shiny email here</label>
       <input id="email" type="email" name="email" placeholder="email" style="width: 300px">

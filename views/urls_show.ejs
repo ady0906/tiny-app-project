@@ -6,7 +6,7 @@
 </head>
 <body>
   <% include ./partials/_header %>
-  <%= userEmail %>
+  <% userEmail; %>
   <blockquote>
     your shortened URL &nbsp;&#8594;&nbsp; <%= shortURL %> <br>
     your full URL &nbsp;&#8594;&nbsp; <%= longURL[shortURL] %>
