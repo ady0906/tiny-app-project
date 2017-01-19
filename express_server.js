@@ -105,6 +105,16 @@ app.post("/login", (req, res) => {
   // debugger;
 });
 
+app.post("/logout", (req, res) => {
+  res.cookie('username', req.body.username, {maxAge: 64000});
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
+  res.clearCookie("username");
+  res.redirect("/");
+});
+
 
 app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}!`);

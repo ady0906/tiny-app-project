@@ -9,12 +9,17 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+  .div1, .div2 {
+    display: inline-block;
+  }
+  </style>
 </head>
 <body>
 <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="/">
                 <span class="glyphicon glyphicon glyphicon-tree-deciduous"></span>
                 tiny app
             </a>
@@ -24,7 +29,7 @@
             <li><a href="/about">About</a></li>
           <% if (!username) { %>
             <li>
-              <form action="/login" method="POST">
+              <form action="/login" method="POST" class = "loginform">
                 <label for="username">Enter a username:</label>
                 <input id="username" type="text" name="username" style="width: 300px">
                 <input type="submit" value="Submit">
@@ -32,7 +37,7 @@
             </li>
           <% } else { %>
             <li>
-              <form id = "logout" method = "POST" action = "/logout">
+              <form id = "logout" method = "POST" action = "/logout" class = "logoutbutton">
                 <button type = "submit" class = "btn btn-danger btn-sm" form = "logout" value = "delete">log out</button>
               </form>
             </li>
