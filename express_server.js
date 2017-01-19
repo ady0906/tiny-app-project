@@ -1,6 +1,6 @@
 var express = require("express");
-var cookieParser = require('cookie-parser');
 var app = express();
+var cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 
@@ -15,14 +15,16 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
-var urlDatabase = {
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {};
+
 app.get("/", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    userEmail: req.cookies["userEmail"],
     urls: urlDatabase
   };
   res.redirect("/urls");
@@ -34,7 +36,7 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    userEmail: req.cookies["userEmail"],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
@@ -42,7 +44,7 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    userEmail: req.cookies["userEmail"],
     urls: urlDatabase
   };
   res.render("urls_new", templateVars);
@@ -66,7 +68,7 @@ app.post("/urls", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.id];
-  var magicCode = req.params.shortURL;
+  let magicCode = req.params.shortURL;
   res.redirect(urlDatabase[magicCode]);
 });
 
@@ -90,37 +92,57 @@ app.post("/urls/:id", (req, res) => {
     username: req.cookies["username"],
     urls: urlDatabase
   };
-  // debugger;
   res.redirect('/urls');
 });
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username, {maxAge: 64000});
+  res.cookie('userEmail', req.body.userEmail, {maxAge: 64000});
   let templateVars = {
-    username: req.cookies["username"],
+    username: req.cookies["userEmail"],
     urls: urlDatabase
   };
   // console.log('cookie created successfully');
   res.redirect('/');
-  // debugger;
 });
 
 app.post("/logout", (req, res) => {
-  res.cookie('username', req.body.username, {maxAge: 64000});
+  res.cookie('userEmail', req.body.userEmail, {maxAge: 64000});
   let templateVars = {
-    username: req.cookies["username"],
+    userEmail: req.cookies["userEmail"],
     urls: urlDatabase
   };
-  res.clearCookie("username");
+  res.clearCookie("userEmail");
   res.redirect("/");
 });
 
 app.get("/register", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    userEmail: req.cookies["userEmail"],
     urls: urlDatabase
   };
   res.render("login", templateVars);
+});
+
+app.post("/register", (req, res) => {
+  let userRandomID = generateRandomString();
+  let userEmail = req.body.email;
+  let userPassword = req.body.password;
+  if (!userEmail || !userPassword) {
+    res.status(400).send('Status code 400: you need an email address and a password to register!')
+  }
+  for (let user in users) {
+    if (users[user].email === userEmail) {
+      res.status(400).send('Status code 400: this email address is already in use!');
+      return;
+    }
+  }
+    users[userRandomID] = {
+    id: userRandomID,
+    email: userEmail,
+    password: userPassword
+  }
+  res.redirect("/");
+  // debugger;
 });
 
 
