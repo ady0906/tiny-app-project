@@ -25,7 +25,8 @@ const users = {};
 app.get("/", (req, res) => {
   let templateVars = {
     userEmail: req.cookies["userEmail"],
-    urls: urlDatabase
+    urls: urlDatabase,
+    usersInfo: users
   };
   res.redirect("/urls");
 });
@@ -37,7 +38,8 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = {
     userEmail: req.cookies["userEmail"],
-    urls: urlDatabase
+    urls: urlDatabase,
+    usersInfo: users
   };
   res.render("urls_index", templateVars);
 });
@@ -45,7 +47,8 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let templateVars = {
     userEmail: req.cookies["userEmail"],
-    urls: urlDatabase
+    urls: urlDatabase,
+    usersInfo: users
   };
   res.render("urls_new", templateVars);
 });
@@ -54,7 +57,8 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase,
-    userEmail: req.cookies["userEmail"]
+    userEmail: req.cookies["userEmail"],
+    usersInfo: users
   };
   res.render("urls_show", templateVars);
 });
@@ -75,7 +79,8 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   let templateVars = {
     userEmail: req.cookies["userEmail"],
-    urls: urlDatabase
+    urls: urlDatabase,
+    usersInfo: users
   };
   let key = req.params.id;
   delete urlDatabase[key];
@@ -90,18 +95,20 @@ app.post("/urls/:id", (req, res) => {
   urlDatabase[updatedShort] = updatedURL;
   let templateVars = {
     userEmail: req.cookies["userEmail"],
-    urls: urlDatabase
+    urls: urlDatabase,
+    usersInfo: users
   };
   res.redirect('/urls');
 });
 
-app.get("/login", (req, res) {
+app.get("/login", (req, res) => {
   let templateVars = {
     userEmail: req.cookies["userEmail"],
-    urls: urlDatabase
+    urls: urlDatabase,
+    usersInfo: users
   };
   res.render("actuallogin", templateVars);
-)};
+});
 
 app.post("/login", (req, res) => {
   // res.cookie('userEmail', req.body.userEmail, {maxAge: 64000});
@@ -126,17 +133,14 @@ app.post("/login", (req, res) => {
     }
   }
   res.status(403).send('Status code 403: you do not seem to be a registered user!');
-}
-
-
-  res.redirect('/');
 });
 
 app.post("/logout", (req, res) => {
   res.cookie('userEmail', req.body.userEmail, {maxAge: 64000});
   let templateVars = {
     userEmail: req.cookies["userEmail"],
-    urls: urlDatabase
+    urls: urlDatabase,
+    usersInfo: users
   };
   res.clearCookie("userEmail");
   res.redirect("/");
@@ -145,7 +149,8 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   let templateVars = {
     userEmail: req.cookies["userEmail"],
-    urls: urlDatabase
+    urls: urlDatabase,
+    usersInfo: users
   };
   res.render("login", templateVars);
 });

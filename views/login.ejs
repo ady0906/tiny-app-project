@@ -4,10 +4,11 @@
   </head>
   <body>
     <% include partials/_header %>
-    <%= userEmail %>
+    <%= usersInfo[userEmail].email %>
     <form action="/register" method="POST" style="margin:150px;">
       <label for="email">type shiny email here</label>
-      <input id="email" type="email" name="email" placeholder="email" style="width: 300px"><br>
+      <input id="email" type="email" name="email" placeholder="email" style="width: 300px">
+      <br><br>
       <label for="password">type brand new password here</label>
       <input id="password" type="password" name="password" placeholder="password" style="width: 300px">
       <input type="submit" value="Register">

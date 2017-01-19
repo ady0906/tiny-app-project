@@ -28,14 +28,17 @@
             <li><a href="/">Home</a></li>
             <li><a href="/about">About</a></li>
           <% if (!userEmail) { %>
-            <li><a href = "/register">Register here</a></li>
-            <li><a href = "/register">Login</a></li>
+            <li><a href = "/register">Register</a></li>
+            <li><a href = "/login">Login</a></li>
           <% } else { %>
             <li>
               <form id = "logout" method = "POST" action = "/logout" class = "logoutbutton">
                 <button type = "submit" class = "btn btn-danger btn-sm" form = "logout" value = "delete">log out</button>
               </form>
             </li>
+          <li>
+            <%= usersInfo[userEmail].email %>
+          </li>
           <% } %>
         </ul>
     </div>
