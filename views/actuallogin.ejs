@@ -5,12 +5,13 @@
   <body>
     <% include partials/_header %>
     <%= userEmail %>
-    <form action="/register" method="POST" style="margin:150px;">
-      <label for="email">type shiny email here</label>
+    <h1>Nice to see you again!</h1>
+    <form action="/login" method="POST" style="margin:150px;">
+      <label for="email">type email here</label>
       <input id="email" type="email" name="email" placeholder="email" style="width: 300px"><br>
-      <label for="password">type brand new password here</label>
+      <label for="password">type password here</label>
       <input id="password" type="password" name="password" placeholder="password" style="width: 300px">
-      <input type="submit" value="Register">
+      <input type="submit" value="Login">
     </form>
   </body>
 </html>

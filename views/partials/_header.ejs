@@ -27,10 +27,9 @@
         <ul class="nav navbar-nav">
             <li><a href="/">Home</a></li>
             <li><a href="/about">About</a></li>
-          <% if (!username) { %>
-            <li>
-              <a href = "/register">Register here</a>
-            </li>
+          <% if (!userEmail) { %>
+            <li><a href = "/register">Register here</a></li>
+            <li><a href = "/register">Login</a></li>
           <% } else { %>
             <li>
               <form id = "logout" method = "POST" action = "/logout" class = "logoutbutton">

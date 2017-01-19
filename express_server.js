@@ -54,7 +54,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase,
-    username: req.cookies["username"]
+    userEmail: req.cookies["userEmail"]
   };
   res.render("urls_show", templateVars);
 });
@@ -74,7 +74,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    userEmail: req.cookies["userEmail"],
     urls: urlDatabase
   };
   let key = req.params.id;
@@ -89,19 +89,46 @@ app.post("/urls/:id", (req, res) => {
   let updatedShort = generateRandomString();
   urlDatabase[updatedShort] = updatedURL;
   let templateVars = {
-    username: req.cookies["username"],
+    userEmail: req.cookies["userEmail"],
     urls: urlDatabase
   };
   res.redirect('/urls');
 });
 
-app.post("/login", (req, res) => {
-  res.cookie('userEmail', req.body.userEmail, {maxAge: 64000});
+app.get("/login", (req, res) {
   let templateVars = {
-    username: req.cookies["userEmail"],
+    userEmail: req.cookies["userEmail"],
     urls: urlDatabase
   };
-  // console.log('cookie created successfully');
+  res.render("actuallogin", templateVars);
+)};
+
+app.post("/login", (req, res) => {
+  // res.cookie('userEmail', req.body.userEmail, {maxAge: 64000});
+  // let templateVars = {
+  //   userEmail: req.cookies["userEmail"],
+  //   urls: urlDatabase
+  // };
+  for (let user in users) {
+    if (users[user].email === req.body.email && users[user].password === req.body.password) {
+      res.cookie('userEmail', users[user].id, {maxAge: 64000});
+      let templateVars = {
+        // userEmail: req.cookies["userEmail"],
+        urls: urlDatabase
+      }
+      res.redirect("/");
+      return;
+    } else if (users[user].email === req.body.email && users[user].password !== req.body.password) {
+      res.status(403).send('Status code 403: this is not the right password!');
+      return;
+    } else if (users[user].email !== req.body.email) {
+      continue;
+    }
+  }
+  res.status(403).send('Status code 403: you do not seem to be a registered user!');
+}
+
+
   res.redirect('/');
 });
 
