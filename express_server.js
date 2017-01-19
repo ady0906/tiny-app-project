@@ -17,6 +17,8 @@ app.set("view engine", "ejs");
 
 const users = {};
 
+const openURLs = {};
+
 app.get("/", (req, res) => {
   res.redirect("/urls");
 });
@@ -57,31 +59,25 @@ app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   let userID = req.cookies["userID"];
   users[userID].urls[shortURL] = longURL;
-  let templateVars = {
-    userID: req.cookies["userID"],
-    urls: users[userID].urls,
-    usersDatabase: users
-  };
+  openURLs[shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
 // SHOULD REMAIN ACCESSIBLE TO EVERYONE
 app.get("/u/:shortURL", (req, res) => {
-  let userID = req.cookie["userID"];
-  let longURL = users[userID].urls[req.params.id];
-  let magicCode = req.params.shortURL;
-  res.redirect(users.[userID].urls[magicCode]);
+  let longURL = openURLs[req.params.id];
+  let redirectionCode = req.params.shortURL;
+  res.redirect(openURLs[redirectionCode]);
 });
 
-// SHOULD CORRECT THE LOGIC TO MAKE IT WORK WITH USERS
 app.post("/urls/:id/delete", (req, res) => {
   let templateVars = {
     userID: req.cookies["userID"],
-    urls: users[userID].urls,
+    urls: users[req.cookies["userID"]].urls,
     usersDatabase: users
   };
   let key = req.params.id;
-  delete users[userID].urls[key];
+  delete users[req.cookies["userID"]].urls[key];
   res.redirect('/urls');
 });
 
@@ -90,9 +86,11 @@ app.post("/urls/:id", (req, res) => {
   let key = req.params.id;
   let userID = req.cookies["userID"];
   delete users[userID].urls[key];
+  delete openURLs[userID];
   let updatedURL = req.body.updatedURL;
   let updatedShort = generateRandomString();
   users[userID].urls[updatedShort] = updatedURL;
+  openURLs[updatedShort] = updatedURL;
   let templateVars = {
     userID: req.cookies["userID"],
     urls: users[userID].urls,
@@ -137,7 +135,6 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   let templateVars = {
     userID: false,
-    // urls: users[userID].urls,
     usersDatabase: users
   };
   res.render("login", templateVars);
