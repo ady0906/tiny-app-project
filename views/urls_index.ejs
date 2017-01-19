@@ -10,10 +10,11 @@
 </head>
 <body>
   <% include ./partials/_header %>
-  <% userEmail; %>
+  <% userID; %>
+  <% if (userID) { %>
   <ul>
-  <% for (let pair in urls) { %>
-      <li><%= pair %>&nbsp;&#8594;&nbsp;<%= urls[pair] %> 	&nbsp;
+  <% for (let pair in usersDatabase[userID].urls) { %>
+      <li><%= pair %>&nbsp;&#8594;&nbsp;<%= usersDatabase[userID].urls[pair] %> 	&nbsp;
         <div class = "div1"><a href="/urls/<%= pair %>">Edit</a></div>	&nbsp;
         <div class = "div2"><form id = "form1" method = "POST" action = "/urls/<%= pair %>/delete">
           <button type = "submit" class = "btn btn-danger btn-sm" form = "form1" value = "Delete">Delete</button>
@@ -22,6 +23,9 @@
     <br>
   <% }; %>
   </ul>
-  <blockquote><a href="/urls/new">Shorten new URL</a></blockquote>
+  <blockquote><a href="/urls/new">Shorten URL</a></blockquote>
+  <% } else { %>
+    <blockquote>You have to register and log in before getting in on the fun</blockquote>
+  <% }; %>
 </body>
 </html>

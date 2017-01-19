@@ -15,11 +15,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
-
 const users = {};
 
 app.get("/", (req, res) => {
@@ -32,18 +27,17 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    userEmail: req.cookies["userEmail"],
-    urls: urlDatabase,
-    usersInfo: users
+    userID: req.cookies["userID"],
+    usersDatabase: users
   };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    userEmail: req.cookies["userEmail"],
-    urls: urlDatabase,
-    usersInfo: users
+    userID: req.cookies["userID"],
+    urls: users[req.cookies["userID"]].urls,
+    usersDatabase: users
   };
   res.render("urls_new", templateVars);
 });
@@ -51,9 +45,9 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase,
-    userEmail: req.cookies["userEmail"],
-    usersInfo: users
+    userID: req.cookies["userID"],
+    urls: users[req.cookies["userID"]].urls,
+    usersDatabase: users
   };
   res.render("urls_show", templateVars);
 });
@@ -61,51 +55,56 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
+  let userID = req.cookies["userID"];
+  users[userID].urls[shortURL] = longURL;
   let templateVars = {
-    userEmail: req.cookies["userEmail"],
-    urls: urlDatabase,
-    usersInfo: users
+    userID: req.cookies["userID"],
+    urls: users[userID].urls,
+    usersDatabase: users
   };
-  res.redirect(`/urls/${shortURL}`, templateVars);
+  res.redirect(`/urls/${shortURL}`);
 });
 
+// SHOULD REMAIN ACCESSIBLE TO EVERYONE
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.id];
+  let userID = req.cookie["userID"];
+  let longURL = users[userID].urls[req.params.id];
   let magicCode = req.params.shortURL;
-  res.redirect(urlDatabase[magicCode]);
+  res.redirect(users.[userID].urls[magicCode]);
 });
 
+// SHOULD CORRECT THE LOGIC TO MAKE IT WORK WITH USERS
 app.post("/urls/:id/delete", (req, res) => {
   let templateVars = {
-    userEmail: req.cookies["userEmail"],
-    urls: urlDatabase,
-    usersInfo: users
+    userID: req.cookies["userID"],
+    urls: users[userID].urls,
+    usersDatabase: users
   };
   let key = req.params.id;
-  delete urlDatabase[key];
-  res.redirect('/urls', templateVars);
+  delete users[userID].urls[key];
+  res.redirect('/urls');
 });
 
+// SORT OUT THE DELETE OPERATION
 app.post("/urls/:id", (req, res) => {
   let key = req.params.id;
-  delete urlDatabase[key];
+  let userID = req.cookies["userID"];
+  delete users[userID].urls[key];
   let updatedURL = req.body.updatedURL;
   let updatedShort = generateRandomString();
-  urlDatabase[updatedShort] = updatedURL;
+  users[userID].urls[updatedShort] = updatedURL;
   let templateVars = {
-    userEmail: req.cookies["userEmail"],
-    urls: urlDatabase,
-    usersInfo: users
+    userID: req.cookies["userID"],
+    urls: users[userID].urls,
+    usersDatabase: users
   };
-  res.redirect('/urls', templateVars);
+  res.redirect('/urls');
 });
 
 app.get("/login", (req, res) => {
   let templateVars = {
-    userEmail: req.cookies["userEmail"],
-    urls: urlDatabase,
-    usersInfo: users
+    userID: req.cookies["userID"],
+    usersDatabase: users
   };
   res.render("actuallogin", templateVars);
 });
@@ -113,12 +112,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   for (let user in users) {
     if (users[user].email === req.body.email && users[user].password === req.body.password) {
-      res.cookie('userEmail', users[user].id, {maxAge: 64000});
-      let templateVars = {
-        userEmail: res.cookie('userEmail', users[user].id, {maxAge: 64000}),
-        urls: urlDatabase,
-        usersInfo: users
-      };
+      res.cookie('userID', users[user].id, {maxAge: 64000});
       res.redirect("/");  //,templateVars);
       return;
     } else if (users[user].email === req.body.email && users[user].password !== req.body.password) {
@@ -132,21 +126,19 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.cookie('userEmail', req.body.userEmail, {maxAge: 64000});
+  res.cookie('userID', req.body.userID, {maxAge: 64000});
   let templateVars = {
-    userEmail: req.cookies["userEmail"],
-    urls: urlDatabase,
-    usersInfo: users
+    usersDatabase: users
   };
-  res.clearCookie("userEmail");
+  res.clearCookie("userID");
   res.redirect("/");
 });
 
 app.get("/register", (req, res) => {
   let templateVars = {
-    userEmail: req.cookies["userEmail"],
-    urls: urlDatabase,
-    usersInfo: users
+    userID: false,
+    // urls: users[userID].urls,
+    usersDatabase: users
   };
   res.render("login", templateVars);
 });
@@ -164,11 +156,12 @@ app.post("/register", (req, res) => {
       return;
     }
   }
-    users[userRandomID] = {
+  users[userRandomID] = {
     id: userRandomID,
     email: userEmail,
-    password: userPassword
-    }
+    password: userPassword,
+    urls: {}
+  }
   res.redirect("/");
 });
 

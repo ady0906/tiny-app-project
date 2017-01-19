@@ -6,10 +6,10 @@
 </head>
 <body>
   <% include ./partials/_header %>
-  <% userEmail; %>
+  <% userID; %>
   <blockquote>
     your shortened URL &nbsp;&#8594;&nbsp; <%= shortURL %> <br>
-    your full URL &nbsp;&#8594;&nbsp; <%= longURL[shortURL] %>
+    your full URL &nbsp;&#8594;&nbsp; <%= urls[shortURL]  %>
     <br>
     <br>
     <form action="/urls/<%= shortURL %>" method="POST">
