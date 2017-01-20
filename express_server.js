@@ -1,6 +1,9 @@
 var express = require("express");
 var app = express();
-var cookieParser = require('cookie-parser');
+var cookie = require('cookie-parser');
+var bcrypt = require('bcrypt');
+
+// var cookieSession = require('cookie-session')
 
 app.use(cookieParser());
 
@@ -108,18 +111,28 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+  let foundUser = null;
   for (let user in users) {
-    if (users[user].email === req.body.email && users[user].password === req.body.password) {
+    // check if the req.email === current email
+    // if true
+      // foundUser = current
+      // exit the loop
+      debugger;
+    if (users[user].email === req.body.email && bcrypt.compareSync(req.body.password, users[user].password)) {
       res.cookie('userID', users[user].id, {maxAge: 64000});
       res.redirect("/");  //,templateVars);
       return;
-    } else if (users[user].email === req.body.email && users[user].password !== req.body.password) {
+    } else if (users[user].email === req.body.email && !bcrypt.compareSync(req.body.password, users[user].password)) {
       res.status(403).send('Status code 403: this is not the right password!');
       return;
     } else if (users[user].email !== req.body.email) {
       continue;
     }
   }
+
+  // if !foundUser
+  // if password !== foundUser's password (bcrypt)
+
   res.status(403).send('Status code 403: you do not seem to be a registered user!');
 });
 
@@ -143,7 +156,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   let userRandomID = generateRandomString();
   let userEmail = req.body.email;
-  let userPassword = req.body.password;
+  let userPassword = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync());
   if (!userEmail || !userPassword) {
     res.status(400).send('Status code 400: you need an email address and a password to register!')
   }
