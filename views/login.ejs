@@ -5,16 +5,28 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Raleway', sans-serif;
+      }
+      .form {
+        margin: -80px;
+      }
+    </style>
   </head>
   <body>
     <% include partials/_header %>
+    <h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nice to meet you!</h1>
+    <div class = form>
     <form action="/register" method="POST" style="margin:150px;">
-      <label for="email">type shiny email here</label>
+      <label for="email">type shiny email here:</label>
       <input id="email" type="email" name="email" placeholder="email" style="width: 300px">
       <br><br>
-      <label for="password">type brand new password here</label>
+      <label for="password">type brand new password here:</label>
       <input id="password" type="password" name="password" placeholder="password" style="width: 300px">
       <input type="submit" value="Register">
     </form>
+  </div>
   </body>
 </html>

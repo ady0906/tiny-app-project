@@ -10,15 +10,20 @@
       body {
         font-family: 'Raleway', sans-serif;
       }
+      h3 {
+        margin: 55px;
+        font-size: 60%;
+      }
+      h4 {
+        margin: 120px;
+      }
     </style>
   </head>
   <body>
     <% include partials/_header %>
     <% userID; %>
-    <form action="/urls" method="POST" style="margin:150px;">
-      <label for="longURL">Enter a URL:</label>
-      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-      <input type="submit" value="Submit">
-    </form>
+    <h2><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome to the tiny app!</h2>
+      <h3>A no-nonsense space to get your favorite URLs condensed into fun-sized links for maximum flexibility</h3>
+        <h4><a href = "/"><br>Get started</h4></p>
   </body>
 </html>

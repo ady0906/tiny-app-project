@@ -5,18 +5,29 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Raleway', sans-serif;
+      }
+      .form {
+        margin: -40px 0px 0px 30px;
+      }
+    </style>
   </head>
   <body>
     <% include partials/_header %>
     <% userID; %>
-    <h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nice to see you again!</h1>
-    <form action="/login" method="POST" style="margin:150px;">
-      <label for="email">type email here</label>
+    <h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Great to see you again!</h1>
+    <div class = "form">
+    <form action="/login" method="POST" style="margin:100px;">
+      <label for="email">type email here:&nbsp;&nbsp;&nbsp;&nbsp;</label>
       <input id="email" type="email" name="email" placeholder="email" style="width: 300px">
       <br><br>
-      <label for="password">type password here</label>
+      <label for="password">type password here:&nbsp;&nbsp;&nbsp;&nbsp;</label>
       <input id="password" type="password" name="password" placeholder="password" style="width: 300px">
       <input type="submit" value="Login">
     </form>
+  </div>
   </body>
 </html>
