@@ -3,12 +3,12 @@ var app = express();
 var cookieSession = require('cookie-session');
 var bcrypt = require('bcrypt');
 
-  app.use(cookieSession({
-    name: 'session',
-    keys: ['secretpassword', 'supersecretpassword']
-  }));
+app.use(cookieSession({
+  name: 'session',
+  keys: ['secretpassword', 'supersecretpassword']
+}));
 
-var PORT = process.env.PORT || 8080; // default port 8080
+var PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 
 function generateRandomString() {
@@ -43,7 +43,7 @@ app.get("/urls", (req, res) => {
   let templateVars = {
     userID: req.session.user_id,
     usersDatabase: users
-  };
+  }
   res.render("urls_index", templateVars);
 });
 
@@ -52,7 +52,7 @@ app.get("/urls/new", (req, res) => {
     userID: req.session.user_id,
     urls: users[req.session.user_id],
     usersDatabase: users
-  };
+  }
   res.render("urls_new", templateVars);
 });
 
@@ -62,7 +62,7 @@ app.get("/urls/:id", (req, res) => {
     userID: req.session.user_id,
     urls: users[req.session.user_id].urls,
     usersDatabase: users
-  };
+  }
   res.render("urls_show", templateVars);
 });
 
@@ -86,7 +86,7 @@ app.post("/urls/:id/delete", (req, res) => {
     userID: req.session.user_id,
     urls: users[req.session.user_id].urls,
     usersDatabase: users
-  };
+  }
   let key = req.params.id;
   delete users[req.session.user_id].urls[key];
   res.redirect('/urls');
@@ -118,12 +118,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  let foundUser = null;
   for (let user in users) {
-    // check if the req.email === current email
-    // if true
-      // foundUser = current
-      // exit the loop
     if (users[user].email === req.body.email && bcrypt.compareSync(req.body.password, users[user].password)) {
       req.session.user_id = users[user].id;
       res.redirect("/");
@@ -133,14 +128,11 @@ app.post("/login", (req, res) => {
       return;
     } else if (users[user].email !== req.body.email) {
       continue;
+      }
     }
-  }
+    res.status(403).send('Status code 403: you do not seem to be a registered user!');
+  });
 
-  // if !foundUser
-  // if password !== foundUser's password (bcrypt)
-
-  res.status(403).send('Status code 403: you do not seem to be a registered user!');
-});
 
 app.post("/logout", (req, res) => {
   let templateVars = {
@@ -163,7 +155,7 @@ app.post("/register", (req, res) => {
   let userID = generateRandomString();
   let userEmail = req.body.email;
   let userPassword = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync());
-  if (!userEmail || !userPassword) {
+  if (!req.body.email || !req.body.password) {
     res.status(400).send('Status code 400: you need an email address and a password to register!')
   }
   for (let user in users) {
