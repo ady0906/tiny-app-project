@@ -1,11 +1,13 @@
 var express = require("express");
 var app = express();
-var cookie = require('cookie-parser');
+var cookieSession = require('cookie-session');
 var bcrypt = require('bcrypt');
 
-// var cookieSession = require('cookie-session')
 
-app.use(cookieParser());
+  app.use(cookieSession({
+    name: 'session',
+    keys: ['secretpassword', 'supersecretpassword']
+  }));
 
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
@@ -32,7 +34,8 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    userID: req.cookies["userID"],
+    // userID: req.cookies["userID"],
+    userID: req.session.user_id,
     usersDatabase: users
   };
   res.render("urls_index", templateVars);
@@ -40,8 +43,10 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    userID: req.cookies["userID"],
-    urls: users[req.cookies["userID"]].urls,
+    // userID: req.cookies["userID"],
+    userID: req.session.user_id,
+    // urls: users[req.cookies["userID"]].urls,
+    urls: users[req.session.user_id],
     usersDatabase: users
   };
   res.render("urls_new", templateVars);
@@ -50,8 +55,10 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
-    userID: req.cookies["userID"],
-    urls: users[req.cookies["userID"]].urls,
+    // userID: req.cookies["userID"],
+    userID: req.session.user_id,
+    // urls: users[req.cookies["userID"]].urls,
+    urls: users[req.session.user_id].urls,
     usersDatabase: users
   };
   res.render("urls_show", templateVars);
@@ -60,7 +67,8 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
-  let userID = req.cookies["userID"];
+  // let userID = req.cookies["userID"];
+  let userID = req.session.user_id;
   users[userID].urls[shortURL] = longURL;
   openURLs[shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
@@ -75,19 +83,23 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   let templateVars = {
-    userID: req.cookies["userID"],
-    urls: users[req.cookies["userID"]].urls,
+    // userID: req.cookies["userID"],
+    userID: req.session.user_id,
+    // urls: users[req.cookies["userID"]].urls,
+    urls: users[req.session.user_id].urls,
     usersDatabase: users
   };
   let key = req.params.id;
-  delete users[req.cookies["userID"]].urls[key];
+  // delete users[req.cookies["userID"]].urls[key];
+  delete users[req.session.user_id].urls[key];
   res.redirect('/urls');
 });
 
 // SORT OUT THE DELETE OPERATION
 app.post("/urls/:id", (req, res) => {
   let key = req.params.id;
-  let userID = req.cookies["userID"];
+  // let userID = req.cookies["userID"];
+  let userID = req.session.user_id;
   delete users[userID].urls[key];
   delete openURLs[userID];
   let updatedURL = req.body.updatedURL;
@@ -95,8 +107,10 @@ app.post("/urls/:id", (req, res) => {
   users[userID].urls[updatedShort] = updatedURL;
   openURLs[updatedShort] = updatedURL;
   let templateVars = {
-    userID: req.cookies["userID"],
-    urls: users[userID].urls,
+    // userID: req.cookies["userID"],
+    userID: req.session.user_id,
+    // urls: users[userID].urls,
+    urls: users[req.session.user_id].urls,
     usersDatabase: users
   };
   res.redirect('/urls');
@@ -104,7 +118,8 @@ app.post("/urls/:id", (req, res) => {
 
 app.get("/login", (req, res) => {
   let templateVars = {
-    userID: req.cookies["userID"],
+    // userID: req.cookies["userID"],
+    userID: req.session.user_id,
     usersDatabase: users
   };
   res.render("actuallogin", templateVars);
@@ -117,9 +132,9 @@ app.post("/login", (req, res) => {
     // if true
       // foundUser = current
       // exit the loop
-      debugger;
     if (users[user].email === req.body.email && bcrypt.compareSync(req.body.password, users[user].password)) {
-      res.cookie('userID', users[user].id, {maxAge: 64000});
+      // res.cookie('userID', users[user].id, {maxAge: 64000});
+      req.session.user_id = users[user].id;
       res.redirect("/");  //,templateVars);
       return;
     } else if (users[user].email === req.body.email && !bcrypt.compareSync(req.body.password, users[user].password)) {
@@ -137,11 +152,13 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.cookie('userID', req.body.userID, {maxAge: 64000});
+  // res.cookie('userID', req.body.userID, {maxAge: 64000});
   let templateVars = {
     usersDatabase: users
   };
-  res.clearCookie("userID");
+  // res.clearCookie("userID");
+  req.session.user_id = null;
+  req.session = null;
   res.redirect("/");
 });
 
@@ -154,7 +171,7 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  let userRandomID = generateRandomString();
+  let userID = generateRandomString();
   let userEmail = req.body.email;
   let userPassword = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync());
   if (!userEmail || !userPassword) {
@@ -166,12 +183,13 @@ app.post("/register", (req, res) => {
       return;
     }
   }
-  users[userRandomID] = {
-    id: userRandomID,
+  users[userID] = {
+    id: userID,
     email: userEmail,
     password: userPassword,
     urls: {}
   }
+  req.session.user_id = users[userID].id;
   res.redirect("/");
 });
 
