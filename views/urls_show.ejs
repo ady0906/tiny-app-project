@@ -8,17 +8,20 @@
 </head>
 <body>
   <% include ./partials/_header %>
-  <% userID; %>
+  <% if (userID) { %>
   <blockquote>
-    your shortened URL &nbsp;&#8594;&nbsp; <%= shortURL %> <br>
-    your full URL &nbsp;&#8594;&nbsp; <%= urls[shortURL]  %>
+    your full URL &nbsp;&#8594;&nbsp; <a href = <%= urls[shortURL] %>><%= urls[shortURL] %></a><br>
+    your shortened URL &nbsp;&#8594;&nbsp; <a href = <%= urls[shortURL] %>>/u/<%= shortURL %></a>
     <br>
     <br>
-    <form action="/urls/<%= shortURL %>" method="POST">
-      <label for="updatedURL">Enter an updated URL:</label>
+    <form action="/urls/<%= shortURL %>"method="POST">
+      <label for="updatedURL">Enter an updated URL:&nbsp;&nbsp;&nbsp;</label>
       <input id ="updatedURL" type="text" name="updatedURL" placeholder="http://" style="width: 300px">
       <input type="submit" value="Update">
     </form>
   </blockquote>
+  <% } else { %>
+    <blockquote>You have to <a href = "/register">register</a> and <a href = "/login">log in</a> before getting in on the fun</blockquote>
+  <% }; %>
 </body>
 </html>

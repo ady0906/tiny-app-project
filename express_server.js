@@ -24,61 +24,89 @@ const users = {};
 const openURLs = {};
 
 app.get("/", (req, res) => {
-  res.redirect("/urls");
+  if (!req.session.user_id) {
+    res.redirect("/login");
+  } else {
+    res.redirect("/urls");
+  }
 });
 
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+  res.json(users);
 });
 
-app.get("/about", (req, res) => {
-  let templateVars = {
-    userID: req.session.user_id,
-    usersDatabase: users
-  };
-  res.render("about", templateVars);
-})
-
 app.get("/urls", (req, res) => {
-  let templateVars = {
-    userID: req.session.user_id,
-    usersDatabase: users
+  if (req.session.user_id) {
+    let templateVars = {
+      userID: req.session.user_id,
+      usersDatabase: users
+      }
+      res.render("urls_index", templateVars);
+  } else {
+      let templateVars = {
+        userID: null
+      }
+      res.render("urls_index", templateVars);
   }
-  res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {
-    userID: req.session.user_id,
-    urls: users[req.session.user_id],
-    usersDatabase: users
+  if (req.session.user_id) {
+    let templateVars = {
+      userID: req.session.user_id,
+      urls: users[req.session.user_id],
+      usersDatabase: users
+      }
+    res.render("urls_new", templateVars);
+  } else {
+    let templateVars = {
+      userID: null
+    }
+    res.render("urls_new", templateVars);
   }
-  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.id,
-    userID: req.session.user_id,
-    urls: users[req.session.user_id].urls,
-    usersDatabase: users
+  if (req.session.user_id && openURLs.hasOwnProperty(req.params.id)) {
+    let templateVars = {
+      shortURL: req.params.id,
+      userID: req.session.user_id,
+      urls: users[req.session.user_id].urls,
+      usersDatabase: users
+    }
+    res.render("urls_show", templateVars);
+  } else if (!req.session.user_id) {
+      let templateVars = {
+        userID: null
+      }
+      res.render("urls_show", templateVars);
+  } else if (!openURLs.hasOwnProperty(req.params.id)) {
+    res.status(404).send("Link not found!");
   }
-  res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  let longURL = req.body.longURL;
-  let shortURL = generateRandomString();
-  let userID = req.session.user_id;
-  users[userID].urls[shortURL] = longURL;
-  openURLs[shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
+  if (req.session.user_id) {
+    let longURL = req.body.longURL;
+    let shortURL = generateRandomString();
+    let userID = req.session.user_id;
+    users[userID].urls[shortURL] = longURL;
+    openURLs[shortURL] = longURL;
+    res.redirect(`/urls/${shortURL}`);
+  } else {
+    let templateVars = {
+      userID: null
+    }
+    res.redirect("/urls");
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = openURLs[req.params.id];
-  let redirectionCode = req.params.shortURL;
-  res.redirect(openURLs[redirectionCode]);
+  if (openURLs.hasOwnProperty(req.params.shortURL)) {
+    res.redirect(openURLs[req.params.shortURL]);
+  } else {
+    res.status(404).send("Link not found!");
+  }
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -89,32 +117,46 @@ app.post("/urls/:id/delete", (req, res) => {
   }
   let key = req.params.id;
   delete users[req.session.user_id].urls[key];
+  delete openURLs[key];
   res.redirect('/urls');
 });
 
 app.post("/urls/:id", (req, res) => {
-  let key = req.params.id;
-  let userID = req.session.user_id;
-  delete users[userID].urls[key];
-  delete openURLs[userID];
-  let updatedURL = req.body.updatedURL;
-  let updatedShort = generateRandomString();
-  users[userID].urls[updatedShort] = updatedURL;
-  openURLs[updatedShort] = updatedURL;
-  let templateVars = {
-    userID: req.session.user_id,
-    urls: users[req.session.user_id].urls,
-    usersDatabase: users
+  if (req.session.user_id) {
+    let key = req.params.id;
+    let userID = req.session.user_id;
+    delete users[userID].urls[key];
+    delete openURLs[userID];
+    let updatedURL = req.body.updatedURL;
+    let updatedShort = generateRandomString();
+    users[userID].urls[updatedShort] = updatedURL;
+    openURLs[updatedShort] = updatedURL;
+    let templateVars = {
+      userID: req.session.user_id,
+      urls: users[req.session.user_id].urls,
+      usersDatabase: users
+    }
+    res.redirect('/urls');
+  } else if (!req.session.user_id) {
+    let templateVars = {
+      userID: null
+    }
+    res.redirect('/urls');
+  } else if (!openURLs.hasOwnProperty(req.params.id)) {
+    res.status(404).send("Link not found!");
   }
-  res.redirect('/urls');
 });
 
 app.get("/login", (req, res) => {
-  let templateVars = {
-    userID: req.session.user_id,
-    usersDatabase: users
+  if (req.session.user_id) {
+    res.redirect('/');
+  } else {
+    let templateVars = {
+      userID: req.session.user_id,
+      usersDatabase: users
+    }
+    res.render("actuallogin", templateVars);
   }
-  res.render("actuallogin", templateVars);
 });
 
 app.post("/login", (req, res) => {
@@ -139,16 +181,19 @@ app.post("/logout", (req, res) => {
     usersDatabase: users
   }
   req.session.user_id = null;
-  req.session = null;
   res.redirect("/");
 });
 
 app.get("/register", (req, res) => {
-  let templateVars = {
-    userID: false,
-    usersDatabase: users
+  if (req.session.user_id) {
+    res.redirect('/');
+  } else {
+    let templateVars = {
+      userID: null,
+      usersDatabase: users
+    }
+    res.render("login", templateVars);
   }
-  res.render("login", templateVars);
 });
 
 app.post("/register", (req, res) => {

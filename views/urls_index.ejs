@@ -3,33 +3,32 @@
 <head>
   <title>TinyApp</title>
   <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
-  <style>
-  body {
-    font-family: 'Raleway', sans-serif;
-  }
-  .div1, .div2 {
-    display: inline-block;
-  }
-  </style>
+    <style>
+    body {
+      font-family: 'Raleway', sans-serif;
+    }
+    .div1, .div2 {
+      display: inline-block;
+    }
+    </style>
 </head>
 <body>
   <% include ./partials/_header %>
-  <% userID; %>
   <% if (userID) { %>
   <ul>
-  <% for (let pair in usersDatabase[userID].urls) { %>
-      <li><%= pair %>&nbsp;&#8594;&nbsp;<%= usersDatabase[userID].urls[pair] %> 	&nbsp;
+    <% for (let pair in usersDatabase[userID].urls) { %>
+      <li><a href = <%= usersDatabase[userID].urls[pair] %>>/u/<%= pair %></a>&nbsp;&#8594;&nbsp;<%= usersDatabase[userID].urls[pair] %> 	&nbsp;
         <div class = "div1"><a href="/urls/<%= pair %>">Edit</a></div>	&nbsp;
         <div class = "div2"><form id = "form1" method = "POST" action = "/urls/<%= pair %>/delete">
           <button type = "submit" class = "btn btn-danger btn-sm" form = "form1" value = "Delete">Delete</button>
         </form></div>
       </li>
     <br>
-  <% }; %>
+    <% }; %>
   </ul>
-  <blockquote><a href="/urls/new">Shorten URL</a></blockquote>
+    <blockquote><a href="/urls/new">Shorten URL</a></blockquote>
   <% } else { %>
-    <blockquote>You have to register and log in before getting in on the fun</blockquote>
+    <blockquote>You have to <a href = "/register">register</a> and <a href = "/login">log in</a> before getting in on the fun</blockquote>
   <% }; %>
 </body>
 </html>
