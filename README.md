@@ -22,4 +22,4 @@ To install dependencies, run:
 
 ## Start
 
-  npm start
+node express_server.js
